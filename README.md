@@ -1,0 +1,6 @@
+- [x] : Rotation
+- [x] : Perspective warp
+- [x] : Blurs
+- [x] : Brightness and contrast
+- [x] : Noise
+- [x] : Grayscale
