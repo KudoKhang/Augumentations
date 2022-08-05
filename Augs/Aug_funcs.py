@@ -9,7 +9,7 @@ class Augment:
         pass
 
     # Pixel-level transforms
-    def ColorJitter(image, brightness=0.9, contrast=0.9, saturation=0.2, hue=0.2, p=1):
+    def ColorJitter(self, image, mask, brightness=0.9, contrast=0.9, saturation=0.2, hue=0.2, p=1):
         """
         :param image:
         :param brightness:
@@ -20,9 +20,9 @@ class Augment:
         :return:
         """
         aug = A.ColorJitter(brightness=0.9, contrast=0.9, saturation=0.2, hue=0.2, p=1)
-        return aug(image=image)['image']
+        return aug(image=image)['image'], mask
 
-    def AdvanceBlur(image, blur_limit=(3, 7), sigmaX_limit=(0.2, 1.0), sigmaY_limit=(0.2, 1.0), rotate_limit=90, beta_limit=(0.5, 8.0), noise_limit=(0.9, 1.1), p=1):
+    def AdvanceBlur(self, image, mask, blur_limit=(3, 7), sigmaX_limit=(0.2, 1.0), sigmaY_limit=(0.2, 1.0), rotate_limit=90, beta_limit=(0.5, 8.0), noise_limit=(0.9, 1.1), p=1):
         """
         :param blur_limit:
         :param sigmaX_limit:
@@ -34,20 +34,20 @@ class Augment:
         :return:
         """
         aug = A.AdvancedBlur(blur_limit=blur_limit, sigmaX_limit=sigmaX_limit, sigmaY_limit=sigmaY_limit, rotate_limit=rotate_limit, beta_limit=beta_limit, noise_limit=noise_limit, p=p)
-        return aug(image=image)['image']
+        return aug(image=image)['image'], mask
 
-    def Blur(image, ksize=(10,10), p=1):
+    def Blur(self, image, mask, ksize=(10,10), p=1):
         """
         :param image:
         :param ksize:
         :return:
         """
         if random.random() < p:
-            return cv2.blur(image, ksize=ksize)
+            return cv2.blur(image, ksize=ksize), mask
         else:
-            return  image
+            return  image, mask
 
-    def GaussianBlur(self, image, ksize=(11, 11), sigmaX=0, sigmaY=0, p=1):
+    def GaussianBlur(self, image, mask, ksize=(11, 11), sigmaX=0, sigmaY=0, p=1):
         """
         :param image:
         :param ksize: lưu ý phải là số lẽ
@@ -56,11 +56,11 @@ class Augment:
         :return:
         """
         if random.random() < p:
-            return cv2.GaussianBlur(image, ksize=ksize, sigmaX=sigmaX, sigmaY=sigmaY)
+            return cv2.GaussianBlur(image, ksize=ksize, sigmaX=sigmaX, sigmaY=sigmaY), mask
         else:
-            return image
+            return image, mask
 
-    def Noise(self, image, var_limit=(500.0, 1000.0), mean=0, per_channel=True, p=1):
+    def Noise(self, image, mask, var_limit=(500.0, 1000.0), mean=0, per_channel=True, p=1):
         """
         :param image:
         :param var_limit: phương sai của nhiễu tỉ lệ thuận với độ lớn của nhiễu
@@ -70,11 +70,13 @@ class Augment:
         :return:
         """
         aug = A.GaussNoise(var_limit=var_limit, mean=mean, per_channel=per_channel, p=p)
-        return aug(image=image)['image']
+        return aug(image=image)['image'], mask
 
-    def GrayScale(self, image, p=1):
+    def GrayScale(self, image, mask, p=1):
         if random.random() < p:
-            return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+            return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY), mask
+        else:
+            return image, mask
 
     # -----------------------------------------------------------------
     # Spatial-level transforms
